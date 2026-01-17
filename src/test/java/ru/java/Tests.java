@@ -13,15 +13,68 @@ import java.util.List;
 
 public class Tests {
 
-    @AfterEach
-    public void clean() {
-
+    @DisplayName("post/student возвращает код 400, если имя не заполнено.")
+    @Test
+    @SneakyThrows
+    public void AddingStudentNotName400() {
+        Student student = new Student(12, null);
+        RestAssured.given()
+                .baseUri("http://localhost:8080/student/")
+                .contentType(ContentType.JSON)
+                .body(student)
+                .when().post().then()
+                .statusCode(400)
+                .body("name", Matchers.nullValue());
     }
 
-    @DisplayName("get /student/{id} с кодом 200,оценок нет")
+    @DisplayName("post /student добавляет студента в базу, если студента с таким ID ранее не было, при этом имя заполнено, код 201")
+    @Test
+    @SneakyThrows
+    public void CreationStudent() {
+        Student student = new Student(22, "vasia");
+        RestAssured.given()
+                .baseUri("http://localhost:8080/student/")
+                .contentType(ContentType.JSON)
+                .body(student)
+                .when().post().then()
+                .statusCode(201)
+                .body("name", Matchers.equalTo("vasia"))
+                .body("id", Matchers.equalTo(22));
+    }
+
+    @DisplayName("post /student обновляет студента в базе, если студент с таким ID ранее был, при этом имя заполнено, код 201")
+    @Test
+    @SneakyThrows
+    public void updateExistingStudent() {
+        Student student = new Student(22, "vasia_updated");
+        RestAssured.given()
+                .baseUri("http://localhost:8080/student/")
+                .contentType(ContentType.JSON)
+                .body(student)
+                .when().post().then()
+                .statusCode(201)
+                .body("name", Matchers.equalTo("vasia_updated"));
+    }
+
+    @DisplayName("post /student добавляет студента в базу, если ID null, то возвращается назначенный ID, код 201")
+    @Test
+    @SneakyThrows
+    public void CreationStudentIdNull() {
+        Student student = new Student(0, "alex");
+        RestAssured.given()
+                .baseUri("http://localhost:8080/student/")
+                .contentType(ContentType.JSON)
+                .body(student)
+                .when().post().then()
+                .statusCode(201)
+                .body("name", Matchers.equalTo("alex"))
+                .body("id", Matchers.notNullValue());
+    }
+
+    @DisplayName("get /student/{id} возвращает JSON студента с указанным ID и заполненным именем, если такой есть в базе, код 200")
     @Test
     public void GetStudent200() {
-        int id = 1;
+        int id = 22;
         String name = "vasia";
         RestAssured.given()
                 .baseUri("http://localhost:8080/student/" + id)
@@ -59,41 +112,13 @@ public class Tests {
                 .statusCode(404);
     }
 
-    @DisplayName("post/student,обновление студента")
-    @Test
-    @SneakyThrows
-    public void updateExistingStudent() {
-        Student student = new Student(1, "vasia_updated");
-        RestAssured.given()
-                .baseUri("http://localhost:8080/student/")
-                .contentType(ContentType.JSON)
-                .body(student)
-                .when().post().then()
-                .statusCode(201)
-                .body("name", Matchers.equalTo("vasia_updated"));
-    }
-
-    @DisplayName("post/student возвращает код 400, если имя не заполнено.")
-    @Test
-    @SneakyThrows
-    public void AddingStudentNotName400() {
-        Student student = new Student(12, null);
-        RestAssured.given()
-                .baseUri("http://localhost:8080/student/")
-                .contentType(ContentType.JSON)
-                .body(student)
-                .when().post().then()
-                .statusCode(400)
-                .body("name", Matchers.nullValue());
-    }
-
     @DisplayName("delete /student/{id} удаляет студента с указанным ID из базы, код 200.")
     @Test
     @SneakyThrows
     public void DeleteStudentId() {
-        int id = 1;
+        int id = 22;
         RestAssured.given()
-                .baseUri("http://localhost:8080/delete /student/"+ id)
+                .baseUri("http://localhost:8080/delete/student/"+ id)
                 .contentType(ContentType.JSON)
                 .when().delete().then()
                 .statusCode(200);
@@ -105,7 +130,7 @@ public class Tests {
     public void DeleteNotExistingStudent() {
         int id = 45;
         RestAssured.given()
-                .baseUri("http://localhost:8080/delete /student/"+ id)
+                .baseUri("http://localhost:8080/delete/student/"+ id)
                 .contentType(ContentType.JSON)
                 .when().delete().then()
                 .statusCode(404);
@@ -122,5 +147,4 @@ public class Tests {
                 .statusCode(200)
                 .body(Matchers.anyOf(Matchers.nullValue(), Matchers.equalTo("")));
     }
-
 }
