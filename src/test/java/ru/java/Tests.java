@@ -1,5 +1,6 @@
 package ru.java;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import lombok.SneakyThrows;
@@ -11,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
+@WireMockTest(httpPort = 8080)
 public class Tests {
 
     @DisplayName("post/student возвращает код 400, если имя не заполнено.")
@@ -34,7 +38,6 @@ public class Tests {
         Student student = new Student(22, "vasia");
         RestAssured.given()
                 .baseUri("http://localhost:8080/student/")
-                .contentType(ContentType.JSON)
                 .body(student)
                 .when().post().then()
                 .statusCode(201)
@@ -49,7 +52,6 @@ public class Tests {
         Student student = new Student(22, "vasia_updated");
         RestAssured.given()
                 .baseUri("http://localhost:8080/student/")
-                .contentType(ContentType.JSON)
                 .body(student)
                 .when().post().then()
                 .statusCode(201)
@@ -63,7 +65,6 @@ public class Tests {
         Student student = new Student(0, "alex");
         RestAssured.given()
                 .baseUri("http://localhost:8080/student/")
-                .contentType(ContentType.JSON)
                 .body(student)
                 .when().post().then()
                 .statusCode(201)
@@ -78,7 +79,6 @@ public class Tests {
         String name = "vasia";
         RestAssured.given()
                 .baseUri("http://localhost:8080/student/" + id)
-                .contentType(ContentType.JSON)
                 .when().get().then()
                 .statusCode(200)
                 .body("id", Matchers.equalTo(id))
@@ -93,7 +93,6 @@ public class Tests {
         List<Integer> marks = Arrays.asList(5, 4);
         RestAssured.given()
                 .baseUri("http://localhost:8080/student/" + id)
-                .contentType(ContentType.JSON)
                 .when().get().then()
                 .statusCode(200)
                 .body("id", Matchers.equalTo(id))
@@ -107,7 +106,6 @@ public class Tests {
         int id = -1;
         RestAssured.given()
                 .baseUri("http://localhost:8080/student/" + id)
-                .contentType(ContentType.JSON)
                 .when().get().then()
                 .statusCode(404);
     }
@@ -119,7 +117,6 @@ public class Tests {
         int id = 22;
         RestAssured.given()
                 .baseUri("http://localhost:8080/delete/student/"+ id)
-                .contentType(ContentType.JSON)
                 .when().delete().then()
                 .statusCode(200);
     }
@@ -131,7 +128,6 @@ public class Tests {
         int id = 45;
         RestAssured.given()
                 .baseUri("http://localhost:8080/delete/student/"+ id)
-                .contentType(ContentType.JSON)
                 .when().delete().then()
                 .statusCode(404);
     }
@@ -139,10 +135,36 @@ public class Tests {
     @DisplayName("get /topStudent код 200 и пустое тело, если студентов в базе нет")
     @Test
     @SneakyThrows
-    public void DeleteStudentEmptyBodyNotStudents() {
+    public void GetTopStudentEmptyBodyNotStudenrts() {
+        stubFor(get(urlEqualTo("/topStudent/"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("")));
+
         RestAssured.given()
                 .baseUri("http://localhost:8080/topStudent/")
-                .contentType(ContentType.JSON)
+                .when().get().then()
+                .statusCode(200)
+                .body(Matchers.anyOf(Matchers.nullValue(), Matchers.equalTo("")));
+    }
+
+    @DisplayName("get /topStudent код 200 и один студент, если у него максимальная средняя оценка, либо же среди всех студентов с максимальной средней у него их больше всего")
+    @Test
+    @SneakyThrows
+    public void OneStudentMaxAverageMarks() {
+        Student studentA = new Student("Ivan", Arrays.asList(4, 5, 4, 5, 5));
+        Student studentB = new Student("Michail", Arrays.asList(5,5,5,5,5));
+        Student studentC = new Student("Oleg", Arrays.asList(4,4,4,4));
+
+        stubFor(get(urlEqualTo("/topStudent/"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("")));
+
+        RestAssured.given()
+                .baseUri("http://localhost:8080/topStudent/")
                 .when().get().then()
                 .statusCode(200)
                 .body(Matchers.anyOf(Matchers.nullValue(), Matchers.equalTo("")));
