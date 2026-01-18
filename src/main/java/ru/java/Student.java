@@ -9,17 +9,27 @@ import java.util.Objects;
 
 public class Student {
     @Getter @Setter
+    private Integer id;
+    @Getter @Setter
     private String name;
     private List<Integer> grades= new ArrayList<>();
 
+    public Student(String name) {
+        this.name = name;
+        this.grades = new ArrayList<>();
+    }
     public Student(String name, List<Integer> grades) {
         this.name = name;
-        this.grades = new ArrayList<>(grades);
-    }
-    public Student(int id, String name) {
-        this(name, new ArrayList<>());
+        if (grades != null) {
+            this.grades = new ArrayList<>(grades);
+        }
     }
 
+    public Student(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+        this.grades = new ArrayList<>();
+    }
 
     public List<Integer> getGrades() {
         return Collections.unmodifiableList(grades);
