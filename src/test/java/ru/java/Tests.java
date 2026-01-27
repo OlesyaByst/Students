@@ -27,23 +27,27 @@ public class Tests {
                 .baseUri("http://localhost:8080/student/")
                 .contentType(ContentType.JSON)
                 .body(student)
+                .log().all()
                 .when().post().then()
-                .statusCode(400);
+                .statusCode(400)
+                .log().all();
     }
 
     @DisplayName("post /student добавляет студента в базу, если студента с таким ID ранее не было, при этом имя заполнено, код 201")
     @Test
     @SneakyThrows
     public void CreationStudent() {
-        Student student = new Student(22, "vasia");
+        Student student = new Student(222, "vasia1");
         RestAssured.defaultParser = Parser.JSON;
         given()
                 .baseUri("http://localhost:8080/student/")
                 .contentType(ContentType.JSON)
                 .body(student)
+                .log().all()
                 .when().post().then()
                 .statusCode(201)
-                .body("id", notNullValue());
+                .body("id", notNullValue())
+                .log().all();
     }// пустое тело ответа?
 
     @DisplayName("post /student обновляет студента в базе, если студент с таким ID ранее был, при этом имя заполнено, код 201")
@@ -55,8 +59,10 @@ public class Tests {
                 .baseUri("http://localhost:8080/student/")
                 .contentType(ContentType.JSON)
                 .body(student)
+                .log().all()
                 .when().post().then()
-                .statusCode(201);
+                .statusCode(201)
+                .log().all();
     }
 
     @DisplayName("post /student добавляет студента в базу, если ID null, то возвращается назначенный ID, код 201")
@@ -69,10 +75,12 @@ public class Tests {
                 .baseUri("http://localhost:8080/student/")
                 .contentType(ContentType.JSON)
                 .body(student)
+                .log().all()
                 .when().post().then()
                 .statusCode(201)
                 .body("id", notNullValue())
-        .extract().body().as(Student.class);;
+                .log().all()
+                .extract().body().as(Student.class);
     }
 
     @DisplayName("get /student/{id} возвращает JSON студента с указанным ID и заполненным именем, если такой есть в базе, код 200")
@@ -83,10 +91,12 @@ public class Tests {
         given()
                 .baseUri("http://localhost:8080/student/" + id)
                 .contentType(ContentType.JSON)
+                .log().all()
                 .when().get().then()
                 .statusCode(200)
                 .body("id", Matchers.equalTo(id))
-                .body("name", Matchers.equalTo(name));
+                .body("name", Matchers.equalTo(name))
+                .log().all();
     }
 
     @DisplayName("get /student/{id} с кодом 404")
@@ -106,10 +116,12 @@ public class Tests {
     public void DeleteStudentId() {
         int id = 22;
         given()
-                .baseUri("http://localhost:8080/delete/student/"+ id)
+                .baseUri("http://localhost:8080/delete/student/" + id)
                 .contentType(ContentType.JSON)
+                .log().all()
                 .when().delete().then()
-                .statusCode(200);
+                .statusCode(200)
+                .log().all();
     }
 
     @DisplayName("delete /student/{id} возвращает код 404, если студента с таким ID в базе нет")
@@ -118,7 +130,7 @@ public class Tests {
     public void DeleteNotExistingStudent() {
         int id = 45;
         given()
-                .baseUri("http://localhost:8080/delete/student/"+ id)
+                .baseUri("http://localhost:8080/delete/student/" + id)
                 .contentType(ContentType.JSON)
                 .when().delete().then()
                 .statusCode(404);
@@ -151,11 +163,13 @@ public class Tests {
         given()
                 .baseUri("http://localhost:8080/topStudent/")
                 .contentType(ContentType.JSON)
+                .log().all()
                 .when().get().then()
                 .statusCode(200)
                 .body("name", Matchers.equalTo("Ivan"))
-                .body("grades.size()", is(5));
-   }
+                .body("grades.size()", is(5))
+                .log().all();
+    }
 
     private void creatStudents() {
         given()
