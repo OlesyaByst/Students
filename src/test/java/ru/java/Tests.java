@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.is;
 @WireMockTest()
 public class Tests {
 
-    @DisplayName("post/student возвращает код 400, если имя не заполнено.")
+    @DisplayName("6. post/student возвращает код 400, если имя не заполнено.")
     @Test
     @SneakyThrows
     public void AddingStudentNotName400() {
@@ -33,7 +33,7 @@ public class Tests {
                 .log().all();
     }
 
-    @DisplayName("post /student добавляет студента в базу, если студента с таким ID ранее не было, при этом имя заполнено, код 201")
+    @DisplayName("3. post /student добавляет студента в базу, если студента с таким ID ранее не было, при этом имя заполнено, код 201")
     @Test
     @SneakyThrows
     public void CreationStudent() {
@@ -50,7 +50,7 @@ public class Tests {
                 .log().all();
     }// пустое тело ответа?
 
-    @DisplayName("post /student обновляет студента в базе, если студент с таким ID ранее был, при этом имя заполнено, код 201")
+    @DisplayName("4. post /student обновляет студента в базе, если студент с таким ID ранее был, при этом имя заполнено, код 201")
     @Test
     @SneakyThrows
     public void updateExistingStudent() {
@@ -65,7 +65,7 @@ public class Tests {
                 .log().all();
     }
 
-    @DisplayName("post /student добавляет студента в базу, если ID null, то возвращается назначенный ID, код 201")
+    @DisplayName("5. post /student добавляет студента в базу, если ID null, то возвращается назначенный ID, код 201")
     @Test
     @SneakyThrows
     public void CreationStudentIdNull() {
@@ -83,7 +83,7 @@ public class Tests {
                 .extract().body().as(Student.class);
     }
 
-    @DisplayName("get /student/{id} возвращает JSON студента с указанным ID и заполненным именем, если такой есть в базе, код 200")
+    @DisplayName("1. get /student/{id} возвращает JSON студента с указанным ID и заполненным именем, если такой есть в базе, код 200")
     @Test
     public void GetStudent200() {
         int id = 22;
@@ -99,7 +99,7 @@ public class Tests {
                 .log().all();
     }
 
-    @DisplayName("get /student/{id} с кодом 404")
+    @DisplayName("2.get /student/{id} с кодом 404")
     @Test
     public void GetStudent404() {
         int id = -1;
@@ -110,7 +110,7 @@ public class Tests {
                 .statusCode(404);
     }
 
-    @DisplayName("delete /student/{id} удаляет студента с указанным ID из базы, код 200.")
+    @DisplayName("7. delete /student/{id} удаляет студента с указанным ID из базы, код 200.")
     @Test
     @SneakyThrows
     public void DeleteStudentId() {
@@ -124,7 +124,7 @@ public class Tests {
                 .log().all();
     }
 
-    @DisplayName("delete /student/{id} возвращает код 404, если студента с таким ID в базе нет")
+    @DisplayName("8. delete /student/{id} возвращает код 404, если студента с таким ID в базе нет")
     @Test
     @SneakyThrows
     public void DeleteNotExistingStudent() {
@@ -136,7 +136,7 @@ public class Tests {
                 .statusCode(404);
     }
 
-    @DisplayName("get /topStudent код 200 и пустое тело, если студентов в базе нет")
+    @DisplayName("9. get /topStudent код 200 и пустое тело, если студентов в базе нет")
     @Test
     @SneakyThrows
     public void GetTopStudentEmptyBodyNotStudenrts() {
@@ -154,7 +154,7 @@ public class Tests {
                 .body(Matchers.anyOf(Matchers.nullValue(), Matchers.equalTo("")));
     }
 
-    @DisplayName("get /topStudent код 200 и один студент, если у него максимальная средняя оценка, либо же среди всех студентов с максимальной средней у него их больше всего")
+    @DisplayName("11. get /topStudent код 200 и один студент, если у него максимальная средняя оценка, либо же среди всех студентов с максимальной средней у него их больше всего")
     @Test
     @SneakyThrows
     public void OneStudentMaxAverageMarks() {
