@@ -15,7 +15,6 @@ import java.time.Duration;
 import static junit.framework.Assert.assertEquals;
 
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class WebTest {
 
     private static WebDriver driver;
@@ -36,37 +35,22 @@ public class WebTest {
     }
 
     @Test
-    @Order(1)
-    @DisplayName("2. Убедиться, что заголовок сайта: «Горячее – самые интересные и обсуждаемые посты | Пикабу».")
+    @DisplayName("Авторизация - не успешна")
     public void checkPageTitle() {
-        //  Assert.assertEquals(driver.getCurrentUrl(), "https://pikabu.ru/");
+        //2.Убедиться, что заголовок сайта: «Горячее – самые интересные и обсуждаемые посты | Пикабу».
         assertEquals(driver.getTitle(), "Горячее – самые интересные и обсуждаемые посты | Пикабу");
-    }
 
-    @Test
-    @Order(2)
-    @DisplayName("3. Кликнуть на кнопку «Войти»")
-    public void clickLoginButton() {
+        //3. Кликнуть на кнопку «Войти»")
         driver.findElement(By.cssSelector(".pkb-normal-btn.header-right-menu__login-button")).click(); //  $('.pkb-normal-btn.header-right-menu__login-button') .header__right-menu .header__signin
-    }
 
-    @Test
-    @Order(3)
-    @DisplayName("4. Убедиться, что отображается модальное окно «Авторизация», отображаются поля «Логин» и «Пароль», отображается кнопка «Войти».")
-    public void authorizationWindowRight() {
-
+        // 4. Убедиться, что отображается модальное окно «Авторизация», отображаются поля «Логин» и «Пароль», отображается кнопка «Войти».")
         assertEquals(driver.findElement(By.cssSelector(".auth__header")).getText(), "Войти");
         assertEquals(driver.findElement(By.cssSelector(".popup_animate.popup_oldstyle.popup_show input[name='username']")).getAttribute("placeholder"), "Логин");
         assertEquals(driver.findElement(By.cssSelector(".popup_animate.popup_oldstyle.popup_show input[name='password']")).getAttribute("placeholder"), "Пароль");
         assertEquals(driver.findElement(By.cssSelector(".auth__submit, button[type='submit']")).isDisplayed(), true);
-    }
 
-
-    @Test
-    @Order(4)
-    @DisplayName("5. Ввести в поля данные в формате логин/пароль – Qwerty/Qwerty и нажать «Войти»")
-    public void inputLoginPassword() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        //5. Ввести в поля данные в формате логин/пароль – Qwerty/Qwerty и нажать «Войти»")
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         WebElement loginField = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".popup_animate.popup_oldstyle.popup_show input[name='username']")));
         loginField.sendKeys("Qwerty");
@@ -74,17 +58,11 @@ public class WebTest {
         WebElement passwordField = driver.findElement(By.cssSelector(".popup_animate.popup_oldstyle.popup_show input[name='password']"));
         passwordField.sendKeys("Qwerty");
         passwordField.sendKeys(Keys.ENTER);
-    }
 
-    @Test
-    @Order(5)
-    @DisplayName("6. Убедиться, что появилось сообщение об ошибке, и его текст: «Ошибка. Вы ввели неверные данные авторизации»")
-    public void errorMessage() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(8));
+        //6. Убедиться, что появилось сообщение об ошибке, и его текст: «Ошибка. Вы ввели неверные данные авторизации»")
 
 
-        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//span[contains(@class, 'auth__error_top')])[2]")));
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//span[@class='auth__error auth__error_top'])[2]")));
         assertEquals("Ошибка. Вы ввели неверные данные авторизации", error.getText());
     }
-
 }
